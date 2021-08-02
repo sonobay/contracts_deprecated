@@ -333,6 +333,25 @@
   {
     "inputs": [
       {
+        "internalType": "uint256[]",
+        "name": "_tokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getPatchDataByIds",
+    "outputs": [
+      {
+        "internalType": "uint8[][]",
+        "name": "",
+        "type": "uint8[][]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "uint256",
         "name": "_deviceId",
         "type": "uint256"
