@@ -96,24 +96,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_nftContract",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_itemId",
-        "type": "uint256"
-      }
-    ],
-    "name": "createMarketSale",
-    "outputs": [],
-    "stateMutability": "payable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getMarketSalesFee",
     "outputs": [
@@ -150,6 +132,24 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nftContract",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_marketItemId",
+        "type": "uint256"
+      }
+    ],
+    "name": "purchaseItem",
+    "outputs": [],
+    "stateMutability": "payable",
     "type": "function"
   },
   {

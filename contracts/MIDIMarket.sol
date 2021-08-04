@@ -98,24 +98,28 @@ contract MIDIMarket is ReentrancyGuard, Ownable {
         );
     }
 
-    function createMarketSale(address _nftContract, uint256 _itemId)
+    function purchaseItem(address _nftContract, uint256 _marketItemId)
         external
         payable
         nonReentrant
     {
-        uint256 price = idToMarketItem[_itemId].price;
+        uint256 price = idToMarketItem[_marketItemId].price;
 
         require(msg.value == price, "Please submit the correct price");
 
-        uint256 tokenId = idToMarketItem[_itemId].tokenId;
+        uint256 tokenId = idToMarketItem[_marketItemId].tokenId;
         uint256 feeAmount = (price * marketSalesFee) / 10000;
 
-        idToMarketItem[_itemId].seller.transfer(price - feeAmount);
+        // transfer price - fee to seller
+        idToMarketItem[_marketItemId].seller.transfer(price - feeAmount);
+
+        // transfer fee to marketplace wallet
         wallet.transfer(feeAmount);
 
+        // transfer item to buyer
         IERC721(_nftContract).transferFrom(address(this), msg.sender, tokenId);
-        idToMarketItem[_itemId].owner = payable(msg.sender);
-        idToMarketItem[_itemId].sold = true;
+        idToMarketItem[_marketItemId].owner = payable(msg.sender);
+        idToMarketItem[_marketItemId].sold = true;
         _itemsSold.increment();
     }
 }

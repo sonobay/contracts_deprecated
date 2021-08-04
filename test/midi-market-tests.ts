@@ -106,4 +106,67 @@ describe("MIDI Marketplace", function () {
             ))
             .to.be.revertedWith("Listing price too low");
     });
+
+    it("should fail selling item due to price mismatch", async function () {
+        const [_, user2] = await ethers.getSigners();
+        const tokenAddress = this.midi.address;
+
+        // create device
+        const tx = await this.midi.createDevice(MANUFACTURER, DEVICE);
+        await tx.wait();
+
+        // create patch
+        const createPatch = await this.midi.createPatch("Test Patch", 0, midiData);
+        await createPatch.wait();
+
+        await this.midiMarket.createMarketItem(tokenAddress, 1, ethers.utils.parseEther("1"));
+
+        expect(this.midiMarket.connect(user2).purchaseItem(
+            tokenAddress,
+            1, // market item id
+            { value: ethers.utils.parseEther(".99") })).to.be.revertedWith("Please submit the correct price");
+    });
+
+    it("should successfully sell item", async function () {
+        const [owner, user2] = await ethers.getSigners();
+        const ownerAddress = await owner.getAddress();
+        const user2Address = await user2.getAddress();
+        const tokenAddress = this.midi.address;
+        const itemAmount = ethers.utils.parseEther("1");
+
+        // create device
+        const tx = await this.midi.createDevice(MANUFACTURER, DEVICE);
+        await tx.wait();
+
+        // create patch
+        const createPatch = await this.midi.createPatch("Test Patch", 0, midiData);
+        await createPatch.wait();
+
+        // owner has 1 MIDI token
+        let patchCount = await this.midi.getPatchesByOwner(ownerAddress);
+        expect(patchCount.length).to.eq(1);
+
+        // owner sends token to market to sell
+        await this.midiMarket.createMarketItem(tokenAddress, 1, itemAmount);
+
+        // owner no longer has token
+        patchCount = await this.midi.getPatchesByOwner(ownerAddress);
+        expect(patchCount.length).to.eq(0);
+
+        // user2 has no tokens
+        let user2patchCount = await this.midi.getPatchesByOwner(user2Address);
+        expect(user2patchCount.length).to.eq(0);
+
+        // user 2 buys token
+        const sale = await this.midiMarket.connect(user2).purchaseItem(
+            tokenAddress,
+            1, // market item id
+            { value: itemAmount });
+
+        expect(sale).to.changeEtherBalance(owner, itemAmount);
+
+        // user2 has bought token
+        user2patchCount = await this.midi.getPatchesByOwner(user2Address);
+        expect(user2patchCount.length).to.eq(1);
+    });
 });
