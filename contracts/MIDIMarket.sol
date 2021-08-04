@@ -7,6 +7,8 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+import "hardhat/console.sol";
+
 contract MIDIMarket is ReentrancyGuard, Ownable {
     using Counters for Counters.Counter;
 
